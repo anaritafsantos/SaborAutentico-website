@@ -10,6 +10,12 @@ $ # Editar os valores em .env para os necessarios
 $ python manage.py migrate
 ```
 
+# Creating the SuperUser
+```bash
+$ python manage.py createsuperuser
+```
+Fill as needed, but for `Role` **ALWAYS PUT** `admin`
+
 # RUNNING
 ```bash
 $ python manage.py runserver 8000

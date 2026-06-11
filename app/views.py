@@ -5,52 +5,18 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.validators import validate_email
 from django.contrib import messages
 from django.db import transaction
-from security.permissions import (
+from app.security.permissions import (
     acesso_total, apenas_admin,
-    operar_restaurante, role_required
+    operar_restaurante, role_required,
+    TEAM_ROLES
 )
 from app.models import (
     Cliente, Mesa, Reserva
 )
 
+# Create your views here.
 ROLES = ["admin", "patrao", "staff"]
 User = get_user_model()
-
-# Create your views here.
-
-#############################  AUTH CONTROLLER #############################
-# Mostrar o formulário de Login da Equipa
-def show_login(request):
-    return render(request, 'auth/login.html')
-
-# Processar o Login
-def login_view(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
-        user = authenticate(request, username=email, password=password)
-
-        if user is not None:
-            login(request, user)
-
-            # Equivalente ao redirect()->intended('/dashboard')
-            next_url = request.GET.get('next', '/dashboard/')
-            return redirect(next_url)
-
-        messages.error(request, 'As credenciais estão incorretas.')
-
-    return render(request, 'auth/login.html')
-
-
-# Fazer Logout
-def logout_view(request):
-    logout(request)
-
-    # Volta para a página inicial pública do restaurante
-    return redirect('/')
-##########################################################
-
 
 #############################  CLIENT AUTH CONTROLLER #############################
 def show_login(request):
@@ -164,58 +130,6 @@ def store_reserva(request):
 ##########################################################
 
 #############################  RESERVA CONTROLLER #############################
-# Exibir o formulário público para os clientes
-def public_create(request):
-    return render(request, "reserva_publica.html")
-
-
-# Gravar a reserva feita pelo cliente
-def public_store(request):
-    if request.method == "POST":
-
-        cliente_nome = request.POST.get("cliente_nome")
-        cliente_contacto = request.POST.get("cliente_contacto")
-        data_reserva = request.POST.get("data_reserva")
-        hora = request.POST.get("hora")
-        numero_pessoas = request.POST.get("numero_pessoas")
-
-        # Validação básica
-        if not all([
-            cliente_nome,
-            cliente_contacto,
-            data_reserva,
-            hora,
-            numero_pessoas
-        ]):
-            messages.error(request, "Todos os campos são obrigatórios.")
-            return redirect("reserva_publica")
-
-        with transaction.atomic():
-            cliente, created = Cliente.objects.get_or_create(
-                contacto=cliente_contacto,
-                defaults={
-                    "nome": cliente_nome
-                }
-            )
-
-            Reserva.objects.create(
-                cliente=cliente,
-                data_reserva=data_reserva,
-                hora=hora,
-                numero_pessoas=numero_pessoas,
-                estado="pendente"
-            )
-
-        messages.success(request, "Reserva solicitada com sucesso!")
-        return redirect("home")
-
-    return redirect("reserva_publica")
-
-
-# -------------------------------------------------------
-# PAINEL DE GESTÃO
-# -------------------------------------------------------
-
 @login_required
 def index(request):
     reservas = (
@@ -229,7 +143,6 @@ def index(request):
         "auth/dashboard.html",
         {"reservas": reservas}
     )
-
 
 # Atualizar Estado da Reserva
 @login_required
@@ -259,7 +172,6 @@ def atualizar_estado(request, reserva_id):
 
     return redirect("dashboard")
 
-
 # Eliminar Reserva
 @login_required
 def destroy(request, reserva_id):
@@ -281,6 +193,7 @@ def destroy(request, reserva_id):
     return redirect("dashboard")
 ##########################################################
 
+
 #############################  USER CONTROLLER #############################
 @login_required
 def index(request):
@@ -289,7 +202,6 @@ def index(request):
     return render(request, "admin/users.html", {
         "users": users
     })
-
 
 @login_required
 def store(request):
@@ -337,7 +249,6 @@ def store(request):
     messages.success(request, "Utilizador criado com sucesso.")
     return redirect("users")
 
-
 @login_required
 def update(request, user_id):
     if request.method != "POST":
@@ -379,7 +290,6 @@ def update(request, user_id):
     messages.success(request, "Utilizador atualizado com sucesso.")
     return redirect("users")
 
-
 @login_required
 def destroy(request, user_id):
     user = get_object_or_404(User, id=user_id)
@@ -393,3 +303,56 @@ def destroy(request, user_id):
     messages.success(request, "Utilizador eliminado com sucesso.")
     return redirect("users")
 ##########################################################
+
+
+############################# VISTOS ###################################
+def home(request):
+    print((request.user.is_authenticated and request.user.role in TEAM_ROLES))
+    return render(request, "welcome.html", {
+        "already_valid_team_login": ( request.user.is_authenticated and request.user.role in TEAM_ROLES ),
+    })
+
+@transaction.atomic
+def reservaPublicCreate(request):
+    if request.method == "POST":
+        cliente_nome = request.POST.get("cliente_nome")
+        cliente_contacto = request.POST.get("cliente_contacto")
+        data_reserva = request.POST.get("data_reserva")
+        hora = request.POST.get("hora")
+        numero_pessoas = request.POST.get("numero_pessoas")
+        # Validação básica
+        if not all([
+            cliente_nome,
+            cliente_contacto,
+            data_reserva,
+            hora,
+            numero_pessoas
+        ]):
+            messages.error(request, "Todos os campos são obrigatórios.")
+            return redirect("reserva_publica")
+        cliente, created = Cliente.objects.get_or_create(
+            contacto=cliente_contacto,
+            defaults={
+                "nome": cliente_nome
+            }
+        )
+        Reserva.objects.create(
+            id_cliente=cliente,
+            data_reserva=data_reserva,
+            hora=hora,
+            numero_pessoas=numero_pessoas,
+            estado="pendente"
+        )
+        messages.success(request, "Reserva solicitada com sucesso!")
+        return redirect("home")
+    return render(request, "reserva-publica.html")
+
+@login_required
+@operar_restaurante
+def dashboardView(request):
+    return render(request, "auth/dashboard.html")
+
+@login_required
+@acesso_total
+def user_management(request):
+    return render(request, "admin/users.html")
