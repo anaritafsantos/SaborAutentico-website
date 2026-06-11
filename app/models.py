@@ -113,6 +113,13 @@ class Reserva(models.Model):
         managed = True
         db_table = 'reserva'
 
+    @property
+    def cliente_nome(self):
+        return self.id_cliente.nome
+
+    @property
+    def cliente_contacto(self):
+        return self.id_cliente.contacto
 
 class ReservaMesa(models.Model):
     id_reserva_mesa = models.AutoField(primary_key=True)
@@ -127,6 +134,7 @@ class ReservaMesa(models.Model):
 
 class CustomUser(AbstractUser):
     username = models.CharField(max_length=150, unique=False, default="N/A")
+    name = models.CharField(max_length=255, blank=True, null=True, default="")
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=50, default="none", choices=[
         ('admin', 'Admin'),
@@ -135,4 +143,4 @@ class CustomUser(AbstractUser):
         ('none', 'None')
     ])
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "role"]
+    REQUIRED_FIELDS = ["username", "role", "name"]

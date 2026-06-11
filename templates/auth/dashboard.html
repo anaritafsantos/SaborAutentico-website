@@ -15,7 +15,7 @@
 
 <nav class="navbar navbar-expand-lg mb-4">
     <div class="container">
-        <a class="navbar-brand text-white" href="{% url 'home' %}">
+        <a class="navbar-brand text-white" href="#">
             Sabor <span style="color:#c9a84c;">Autêntico</span> | Gestão
         </a>
 
@@ -100,8 +100,12 @@
                                 <span class="badge badge-preparacao p-2">Em Preparação</span>
                             {% elif reserva.estado == 'servido' %}
                                 <span class="badge badge-servido p-2">Servido</span>
-                            {% else %}
+                            {% elif reserva.estado == 'concluido' %}
                                 <span class="badge badge-concluido p-2">Concluído</span>
+                            {% elif reserva.estado == 'cancelada' %}
+                                <span class="badge p-2">Cancelada</span>
+                            {% else %}
+                                <span class="badge p-2">UNKNOWN</span>
                             {% endif %}
                         </td>
 
@@ -109,7 +113,7 @@
                             <div class="d-flex gap-2 justify-content-center">
 
                                 {% if perms.restaurant.operar_restaurante %}
-                                    <form action="{% url 'reserva_confirmar' reserva.id_reserva %}" method="post">
+                                    <form action="{% url 'reservas_id' reserva.id_reserva %}" method="post">
                                         {% csrf_token %}
                                         <select name="estado" class="form-select form-select-sm"
                                                 onchange="this.form.submit()">
@@ -119,12 +123,13 @@
                                             <option value="em_preparacao">Em Preparação</option>
                                             <option value="servido">Servido</option>
                                             <option value="concluido">Concluído</option>
+                                            <option value="cancelada">Cancelada</option>
                                         </select>
                                     </form>
                                 {% endif %}
 
                                 {% if perms.restaurant.acesso_total %}
-                                    <form action="{% url 'reserva_delete' reserva.id_reserva %}"
+                                    <form action="{% url 'reservas_id' reserva.id_reserva %}"
                                           method="post"
                                           onsubmit="return confirm('Apagar esta reserva?')">
                                         {% csrf_token %}
@@ -152,7 +157,7 @@
     {% if perms.restaurant.acesso_total %}
         <div class="mt-4">
             <a href="{% url 'admin_users' %} " class="btn btn-outline-warning">
-                Gerir Utilizadores (Admin Only)
+                Gerir Utilizadores (Admin e Patrão Apenas)
             </a>
         </div>
     {% endif %}

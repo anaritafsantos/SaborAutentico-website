@@ -14,7 +14,7 @@ BEGIN
     END IF;
 
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'reserva_estado') THEN
-        CREATE TYPE reserva_estado AS ENUM ('pendente', 'confirmada', 'cancelada');
+        CREATE TYPE reserva_estado AS ENUM ('pendente', 'confirmada', 'cancelada', 'em_preparacao', 'servido', 'concluido');
     END IF;
 END$$;
 

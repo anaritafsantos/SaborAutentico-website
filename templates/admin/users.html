@@ -17,7 +17,7 @@
 <nav class="navbar navbar-expand-lg mb-4">
     <div class="container">
 
-        <a class="navbar-brand text-white" href="{% url 'reservas_index' %}">
+        <a class="navbar-brand text-white" href="{% url 'dashboard' %}">
             Sabor <span style="color:#c9a84c;">Autêntico</span> | Utilizadores
         </a>
 
@@ -26,7 +26,7 @@
             {% if user.is_authenticated %}
                 <span>Olá, <strong>{{ user.get_full_name|default:user.username }}</strong></span>
 
-                <a href="{% url 'reservas_index' %}" class="btn btn-outline-light btn-sm">
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-light btn-sm">
                     ← Dashboard
                 </a>
 
@@ -98,8 +98,10 @@
                                 <span class="user-badge badge-admin">ADMIN</span>
                             {% elif u.role == "patrao" %}
                                 <span class="user-badge badge-patrao">PATRÃO</span>
-                            {% else %}
+                            {% elif u.role == "staff" %}
                                 <span class="user-badge badge-staff">STAFF</span>
+                            {% else %}
+                                <span class="user-badge badge-staff">UNKNOWN</span>
                             {% endif %}
                         </td>
 
@@ -113,12 +115,10 @@
                                 </button>
 
                                 {% if u.id != user.id %}
-                                    <form action="{% url 'admin_users_delete' u.id %}" method="POST"
-                                          onsubmit="return confirm('Eliminar {{ u.name }}?')">
+                                    <form action="{% url 'admin_users_id' u.id %}" method="POST" onsubmit="return confirm('Eliminar {{ u.name }}?')">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-sm btn-red">
-                                            Eliminar
-                                        </button>
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-sm btn-red">Eliminar</button>
                                     </form>
                                 {% endif %}
 
@@ -131,7 +131,7 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
 
-                                <form action="{% url 'admin_users_update' u.id %}" method="POST">
+                                <form action="{% url 'admin_users_id' u.id %}" method="POST">
                                     {% csrf_token %}
 
                                     <div class="modal-header">
@@ -205,7 +205,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
 
-            <form action="{% url 'admin_users_store' %}" method="POST">
+            <form action="{% url 'admin_users' %}" method="POST">
                 {% csrf_token %}
 
                 <div class="modal-header">
