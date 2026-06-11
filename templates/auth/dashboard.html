@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Gestão - Sabor Autêntico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body { background-color: #0d0b09; color: #f5f0e8; font-family: 'Montserrat', sans-serif; }
+        .navbar { background-color: #161210; border-bottom: 1px solid #c9a84c33; }
+        .card { background-color: rgb(70, 55, 48); border: 1px solid #c9a84c33; color: #f5f0e8; }
+        .table { color:rgb(152, 143, 128); border-color: #c9a84c22; }
+        .table thead { background-color: #c0392b; color: white; }
+        .table th { background-color: black; color: white; }
+        .table td { background-color:rgb(70, 55, 48); color: white; }
+        .table-hover tbody tr:hover { background-color: #221a16; color: #fff; }
+
+        .badge-pendente { background-color: #dfa82b; color: #000; }
+        .badge-confirmada { background-color: #27ae60; color: white; }
+        .badge-preparacao { background-color: #2980b9; color: white; }
+        .badge-servido { background-color: #8e44ad; color: white; }
+        .badge-concluido { background-color: #7f8c8d; color: white; }
+
+        .user-badge { font-size: 0.7rem; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+        .badge-admin { background: #c0392b; color: white; }
+        .badge-patrao { background: #c9a84c; color: #0d0b09; }
+        .badge-staff { background: #2980b9; color: white; }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg mb-4">
+    <div class="container">
+        <a class="navbar-brand text-white" href="#">
+            Sabor <span style="color:#c9a84c;">Autêntico</span> | Gestão
+        </a>
+
+        <div class="d-flex align-items-center">
+            <span class="me-3">
+                Olá, <strong>{{ user.name }}</strong>
+            </span>
+
+            {% if user.role == 'admin' %}
+                <span class="user-badge badge-admin">ADMINISTRADOR</span>
+            {% elif user.role == 'patrao' %}
+                <span class="user-badge badge-patrao">PATRÃO</span>
+            {% else %}
+                <span class="user-badge badge-staff">STAFF / EQUIPA</span>
+            {% endif %}
+
+            <form action="{% url 'logout' %}" method="post" class="ms-3">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger btn-sm">Sair</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success bg-success text-white border-0 shadow">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card p-3 mb-4">
+        <h5 class="text-warning mb-2">As suas permissões ativas:</h5>
+
+        <p class="mb-0 text-muted small">
+            {% if perms.restaurant.acesso_total %}
+                <span class="text-success">● Moderação Total</span>
+                (Pode validar pedidos, alterar mesas e apagar reservas.)
+            {% else %}
+                <span class="text-info">● Operação de Sala</span>
+                (Pode gerir estados dos pedidos.)
+            {% endif %}
+        </p>
+    </div>
+
+    <h2 class="mb-4 text-white">Controlo de Fluxo e Pedidos</h2>
+
+    <div class="card p-4 shadow-lg">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr class="text-center">
+                    <th>Cliente</th>
+                    <th>Contacto</th>
+                    <th>Data / Hora</th>
+                    <th>Pessoas</th>
+                    <th>Estado Atual</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for reserva in reservas %}
+                    <tr class="text-center">
+                        <td class="text-start fw-bold">{{ reserva.cliente_nome }}</td>
+                        <td>{{ reserva.cliente_contacto }}</td>
+                        <td>{{ reserva.data_reserva|date:"d/m/Y" }} às {{ reserva.hora }}</td>
+                        <td>
+                            <span class="badge bg-secondary p-2">
+                                {{ reserva.numero_pessoas }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {% if reserva.estado == 'pendente' %}
+                                <span class="badge badge-pendente p-2">Pendente</span>
+                            {% elif reserva.estado == 'confirmada' %}
+                                <span class="badge badge-confirmada p-2">Confirmada</span>
+                            {% elif reserva.estado == 'em_preparacao' %}
+                                <span class="badge badge-preparacao p-2">Em Preparação</span>
+                            {% elif reserva.estado == 'servido' %}
+                                <span class="badge badge-servido p-2">Servido</span>
+                            {% else %}
+                                <span class="badge badge-concluido p-2">Concluído</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <div class="d-flex gap-2 justify-content-center">
+
+                                {% if perms.restaurant.operar_restaurante %}
+                                    <form action="{% url 'reserva_confirmar' reserva.id_reserva %}" method="post">
+                                        {% csrf_token %}
+                                        <select name="estado" class="form-select form-select-sm"
+                                                onchange="this.form.submit()">
+                                            <option value="">-- Mudar Estado --</option>
+                                            <option value="pendente">Pendente</option>
+                                            <option value="confirmada">Confirmar Reserva</option>
+                                            <option value="em_preparacao">Em Preparação</option>
+                                            <option value="servido">Servido</option>
+                                            <option value="concluido">Concluído</option>
+                                        </select>
+                                    </form>
+                                {% endif %}
+
+                                {% if perms.restaurant.acesso_total %}
+                                    <form action="{% url 'reserva_delete' reserva.id_reserva %}"
+                                          method="post"
+                                          onsubmit="return confirm('Apagar esta reserva?')">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button class="btn btn-sm btn-danger px-3">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                {% endif %}
+
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            Sem reservas ativas.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if perms.restaurant.acesso_total %}
+        <div class="mt-4">
+            <a href="{% url 'admin_users' %}" class="btn btn-outline-warning">
+                Gerir Utilizadores (Admin Only)
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

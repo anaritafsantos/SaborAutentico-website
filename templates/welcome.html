@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabor Autêntico — Restaurante</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,500;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* (your CSS stays unchanged) */
+    </style>
+</head>
+<body>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert-success">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <nav>
+        <a href="{% url 'home' %}" class="nav-logo">Sabor <span>Autêntico</span></a>
+
+        <ul class="nav-links">
+            <li><a href="#home">Início</a></li>
+            <li><a href="#sobre">Sobre</a></li>
+            <li><a href="#chef">Menu</a></li>
+        </ul>
+
+        <div class="nav-right">
+            <a href="{% url 'reserva_publica' %}" class="btn-nav-reservar">Reservar</a>
+        </div>
+    </nav>
+
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <p style="color:var(--gold); letter-spacing: 4px; text-transform: uppercase; font-size: 0.7rem;">
+                Viana do Castelo
+            </p>
+
+            <h1>Bem-Vindos ao <em>Sabor Autêntico</em></h1>
+
+            <p style="color: rgba(245,240,232,0.7); max-width: 500px;">
+                A experiência gastronómica onde a tradição se encontra com o requinte.
+            </p>
+
+            <div class="hero-btns">
+                <a href="{% url 'reserva_publica' %}" class="btn-hero">
+                    Reservar uma Mesa
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="sobre" id="sobre">
+        <div style="background-image: url('https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80'); background-size: cover; min-height: 400px;"></div>
+
+        <div class="sobre-text">
+            <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; font-weight: 400;">
+                Uma história de Sabor.
+            </h2>
+
+            <p style="color: rgba(245,240,232,0.6); margin-top: 20px;">
+                Desde 2026, trazemos o melhor da nossa terra para a sua mesa, com ingredientes frescos e paixão em cada prato.
+            </p>
+        </div>
+    </section>
+
+    <section class="chef" id="chef">
+        <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 3rem; margin-bottom: 30px;">
+            Menu de Assinatura
+        </h2>
+
+        <div class="chef-grid">
+            <div>
+                <div class="menu-item">
+                    <h4>Bacalhau à Lagareiro</h4>
+                    <p>Lombo de bacalhau assado com azeite e batatas a murro.</p>
+                </div>
+
+                <div class="menu-item">
+                    <h4>Secretos de Porco Preto</h4>
+                    <p>Grelhados na brasa com migas alentejanas.</p>
+                </div>
+            </div>
+
+            <div>
+                <div class="menu-item">
+                    <h4>Polvo à Lagareiro</h4>
+                    <p>Polvo tenro grelhado com alho confitado.</p>
+                </div>
+
+                <div class="menu-item">
+                    <h4>Costeletão Maturado</h4>
+                    <p>Carne premium com 30 dias de maturação.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="cta-inner">
+            <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 2.5rem;">
+                Pronto para nos visitar?
+            </h2>
+
+            <a href="{% url 'reserva_publica' %}" class="btn-hero" style="margin-top: 20px;">
+                Fazer Reserva
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <p style="font-size: 0.65rem; opacity: 0.3;">
+            &copy; {{ now|date:"Y" }} Sabor Autêntico. Todos os direitos reservados.
+        </p>
+
+        <div style="display:flex; gap: 20px;">
+            <a href="{% url 'login' %}"
+               style="color: rgba(245,240,232,0.3); font-size: 0.6rem; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;">
+                Acesso Equipa
+            </a>
+        </div>
+    </footer>
+
+</body>
+</html>
