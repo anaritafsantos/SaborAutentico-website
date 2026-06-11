@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.validators import validate_email
 from django.contrib import messages
 from django.db import transaction
+from django.utils.timezone import now
 from app.security.permissions import (
     acesso_total, apenas_admin,
     operar_restaurante, role_required,
@@ -13,6 +14,9 @@ from app.security.permissions import (
 )
 from app.models import (
     Cliente, Mesa, Reserva
+)
+from app.forms import (
+    CreatePublicReservation
 )
 
 # Create your views here.
@@ -22,11 +26,12 @@ User = get_user_model()
 @require_GET
 def home(request):
     return render(request, "welcome.html", {
+        "copyright_year": now().year,
         "already_valid_team_login": ( request.user.is_authenticated and request.user.role in TEAM_ROLES ),
     })
 
 @transaction.atomic
-def reservaPublicCreate(request):
+def reserva_public(request):
     if request.method == "POST":
         cliente_nome = request.POST.get("cliente_nome")
         cliente_contacto = request.POST.get("cliente_contacto")
@@ -63,7 +68,7 @@ def reservaPublicCreate(request):
 @login_required
 @operar_restaurante
 @require_GET
-def dashboardView(request):
+def dashboard_view(request):
     reservas = (
         Reserva.objects
         .select_related("id_cliente")
