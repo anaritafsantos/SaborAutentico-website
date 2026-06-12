@@ -1,6 +1,7 @@
 # INSTALL
 ```bash
 $ git clone GIT_REPO
+$ cd GIT_REPO_NAME
 $ python3 -m venv .venv
 $ .\\.venv\\bin\\activate # Windows
 $ source ./.venv/bin/activate # Linux/Mac
