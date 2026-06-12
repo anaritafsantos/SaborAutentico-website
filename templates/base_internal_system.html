@@ -16,7 +16,7 @@
     <div class="container">
 
         <a class="navbar-brand text-white" href="{% url 'dashboard' %}">
-            Sabor <span style="color:#c9a84c;">Autêntico</span> | Utilizadores
+            Sabor <span style="color:#c9a84c;">Autêntico</span> | {% block page_name %}Nome Página{% endblock %}
         </a>
 
         <div class="d-flex align-items-center gap-3">

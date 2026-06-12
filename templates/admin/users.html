@@ -1,19 +1,10 @@
 {% extends "base_internal_system.html" %}
 {% load static %}
-{% block title %}Gestão de Utilizadores{% endblock %}
-
+{% block page_name %}Utilizadores{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/admin_users.css' %}">
 {% endblock %}
 {% block content %}
-
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-success bg-success text-white border-0 shadow">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
 
     {% if form_errors %}
         <div class="alert alert-danger bg-danger text-white border-0 shadow">
