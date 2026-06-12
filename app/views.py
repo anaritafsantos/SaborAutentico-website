@@ -20,7 +20,6 @@ from app.forms import (
 )
 
 # Create your views here.
-ROLES = ["admin", "patrao", "staff"]
 User = get_user_model()
 
 @require_GET
@@ -131,7 +130,7 @@ def user_management(request):
         if len(password) < 6:
             errors["password"] = "Password must be at least 6 characters."
 
-        if role not in ROLES:
+        if role not in TEAM_ROLES:
             errors["role"] = "Invalid role."
 
         if errors:
@@ -189,7 +188,7 @@ def user_management_id(request, user_id: int):
         if User.objects.exclude(id=user.id).filter(email=email).exists():
             errors["email"] = "Email already exists."
 
-        if role not in ROLES:
+        if role not in TEAM_ROLES:
             errors["role"] = "Invalid role."
 
         if errors:
