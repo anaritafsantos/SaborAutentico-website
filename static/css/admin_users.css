@@ -1,42 +1,113 @@
-body { background-color: #0d0b09; color: #f5f0e8; font-family: 'Montserrat', sans-serif; }
-        .navbar { background-color: #161210; border-bottom: 1px solid #c9a84c33; }
-        .card { background-color: #161210; border: 1px solid #c9a84c33; color: #f5f0e8; }
-        .table { color: #f5f0e8; border-color: #c9a84c22; }
-        .table thead { background-color: #c0392b; color: white; }
-        .table-hover tbody tr:hover { background-color: #221a16; color: #fff; }
+body {
+    background-color: #0d0b09;
+    color: #f5f0e8;
+    font-family: 'Montserrat',
+    sans-serif;
+}
 
-        .user-badge { font-size: 0.7rem; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
-        .badge-admin { background: #c0392b; color: white; }
-        .badge-patrao { background: #c9a84c; color: #0d0b09; }
-        .badge-staff { background: #2980b9; color: white; }
+.navbar {
+    background-color: #161210;
+    border-bottom: 1px solid #c9a84c33;
+}
 
-        .btn-gold { background-color: #c9a84c; color: #0d0b09; border: none; font-weight: 600; }
-        .btn-gold:hover { background-color: #b0913c; }
-        .btn-red { background-color: #c0392b; color: white; border: none; }
-        .btn-red:hover { background-color: #a93226; }
+.card {
+    background-color: #161210;
+    border: 1px solid #c9a84c33;
+    color: #f5f0e8;
+}
 
-        .modal-content { background-color: #161210; color: #f5f0e8; border: 1px solid #c9a84c33; }
-        .modal-header { border-bottom: 1px solid #c9a84c22; }
-        .modal-footer { border-top: 1px solid #c9a84c22; }
+.table {
+    color: #f5f0e8;
+    border-color: #c9a84c22;
+}
 
-        .form-control, .form-select {
-            background-color: #0d0b09;
-            color: #f5f0e8;
-            border: 1px solid #c9a84c55;
-        }
+.table thead {
+    background-color: #c0392b;
+    color: white;
+}
 
-        .form-control:focus, .form-select:focus {
-            background-color: #0d0b09;
-            color: #f5f0e8;
-            border-color: #c9a84c;
-            box-shadow: 0 0 0 0.2rem rgba(201,168,76,.15);
-        }
+.table-hover tbody tr:hover {
+    background-color: #221a16;
+    color: #fff;
+}
 
-        .form-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: rgba(245,240,232,.6);
-        }
+.user-badge {
+    font-size: 0.7rem;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+}
 
-        .btn-close { filter: invert(1); }
+.badge-admin {
+    background: #c0392b;
+    color: white;
+}
+
+.badge-patrao {
+    background: #c9a84c;
+    color: #0d0b09;
+}
+
+.badge-staff {
+    background: #2980b9;
+    color: white;
+}
+
+.btn-gold {
+    background-color: #c9a84c;
+    color: #0d0b09;
+    border: none;
+    font-weight: 600;
+}
+
+.btn-gold:hover {
+    background-color: #b0913c;
+}
+
+.btn-red {
+    background-color: #c0392b;
+    color: white;
+    border: none;
+}
+
+.btn-red:hover {
+    background-color: #a93226;
+}
+
+.modal-content {
+    background-color: #161210;
+    color: #f5f0e8;
+    border: 1px solid #c9a84c33;
+}
+
+.modal-header {
+    border-bottom: 1px solid #c9a84c22;
+}
+
+.modal-footer {
+    border-top: 1px solid #c9a84c22;
+}
+
+.form-control, .form-select {
+    background-color: #0d0b09;
+    color: #f5f0e8;
+    border: 1px solid #c9a84c55;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #0d0b09;
+    color: #f5f0e8;
+    border-color: #c9a84c;
+    box-shadow: 0 0 0 0.2rem rgba(201,168,76,.15);
+}
+
+.form-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(245,240,232,.6);
+}
+
+.btn-close {
+    filter: invert(1);
+}
