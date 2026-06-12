@@ -12,7 +12,7 @@ urlpatterns = [
     # --- 2. SOLICITAÇÃO DE RESERVA PELO CLIENTE (Sem Login) ---
     path('fazer-reserva/', views.reserva_public, name='reserva_publica'),
     # --- 3. CONTROLO DE AUTENTICAÇÃO DA EQUIPA ---
-    path('login/', auth_views.LoginView.as_view(template_name='auth/login.html', next_page='dashboard'), name='login'),
+    path('login/', auth_views.LoginView.as_view(template_name='auth/login.html', next_page='dashboard', redirect_authenticated_user=True), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     # --- 4. PAINEL DE GESTÃO DO RESTAURANTE (Protegido por Autenticação) ---
     path('dashboard/', views.dashboard_view, name='dashboard'),
