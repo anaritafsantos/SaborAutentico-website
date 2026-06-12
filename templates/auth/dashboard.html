@@ -28,8 +28,10 @@
                 <span class="user-badge badge-admin">ADMINISTRADOR</span>
             {% elif user.role == 'patrao' %}
                 <span class="user-badge badge-patrao">PATRÃO</span>
-            {% else %}
+            {% elif user.role == 'staff' %}
                 <span class="user-badge badge-staff">STAFF / EQUIPA</span>
+            {% else %}
+                <span class="user-badge ">UNKNOWN</span>
             {% endif %}
 
             <form action="{% url 'logout' %}" method="post" class="ms-3">
@@ -54,7 +56,7 @@
         <h5 class="text-warning mb-2">As suas permissões ativas:</h5>
 
         <p class="mb-0 text-muted small">
-            {% if perms.restaurant.acesso_total %}
+            {% if has_total_perms %}
                 <span class="text-success">● Moderação Total</span>
                 (Pode validar pedidos, alterar mesas e apagar reservas.)
             {% else %}
@@ -112,23 +114,21 @@
                         <td>
                             <div class="d-flex gap-2 justify-content-center">
 
-                                {% if perms.restaurant.operar_restaurante %}
-                                    <form action="{% url 'reservas_id' reserva.id_reserva %}" method="post">
-                                        {% csrf_token %}
-                                        <select name="estado" class="form-select form-select-sm"
-                                                onchange="this.form.submit()">
-                                            <option value="">-- Mudar Estado --</option>
-                                            <option value="pendente">Pendente</option>
-                                            <option value="confirmada">Confirmar Reserva</option>
-                                            <option value="em_preparacao">Em Preparação</option>
-                                            <option value="servido">Servido</option>
-                                            <option value="concluido">Concluído</option>
-                                            <option value="cancelada">Cancelada</option>
-                                        </select>
-                                    </form>
-                                {% endif %}
+                                <form action="{% url 'reservas_id' reserva.id_reserva %}" method="post">
+                                    {% csrf_token %}
+                                    <select name="estado" class="form-select form-select-sm"
+                                            onchange="this.form.submit()">
+                                        <option value="">-- Mudar Estado --</option>
+                                        <option value="pendente">Pendente</option>
+                                        <option value="confirmada">Confirmar Reserva</option>
+                                        <option value="em_preparacao">Em Preparação</option>
+                                        <option value="servido">Servido</option>
+                                        <option value="concluido">Concluído</option>
+                                        <option value="cancelada">Cancelada</option>
+                                    </select>
+                                </form>
 
-                                {% if perms.restaurant.acesso_total %}
+                                {% if has_total_perms %}
                                     <form action="{% url 'reservas_id' reserva.id_reserva %}"
                                           method="post"
                                           onsubmit="return confirm('Apagar esta reserva?')">
@@ -154,7 +154,7 @@
         </table>
     </div>
 
-    {% if perms.restaurant.acesso_total %}
+    {% if has_total_perms %}
         <div class="mt-4">
             <a href="{% url 'admin_users' %} " class="btn btn-outline-warning">
                 Gerir Utilizadores (Admin e Patrão Apenas)

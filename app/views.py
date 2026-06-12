@@ -32,6 +32,7 @@ def home(request):
 
 @transaction.atomic
 def reserva_public(request):
+    # TODO: make use of a django form (template already supports it)
     if request.method == "POST":
         cliente_nome = request.POST.get("cliente_nome")
         cliente_contacto = request.POST.get("cliente_contacto")
@@ -74,7 +75,10 @@ def dashboard_view(request):
         .select_related("id_cliente")
         .order_by("-data_reserva", "-hora")
     )
-    return render(request, "auth/dashboard.html", {"reservas": reservas})
+    return render(request, "auth/dashboard.html", {
+        "reservas": reservas,
+        "has_total_perms": ( request.user.role in TOTAL_PERMS ),
+    })
 
 @login_required
 @operar_restaurante
