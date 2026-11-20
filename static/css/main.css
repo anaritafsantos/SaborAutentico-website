@@ -1,63 +1,132 @@
+/* =========================================================
+   Sabor Autêntico — paleta base do sistema interno
+   Ajuste de cores: tons mais quentes e ricos, mantendo
+   a identidade escura/elegante do restaurante.
+   ========================================================= */
+:root {
+    --red:      #c0453a;   /* terracota mais quente */
+    --red-dk:   #9e342b;
+    --gold:     #d4b066;   /* dourado mais luminoso */
+    --gold-dk:  #b8954f;
+    --cream:    #f6f1e8;
+    --muted:    #b3a895;
+    --dark:     #100d0a;   /* espresso */
+    --dark2:    #1a1511;   /* painéis */
+    --card:     #241c16;   /* cartões (antes muito lamacento) */
+    --line:     rgba(212, 176, 102, 0.18);
+}
+
 body {
-    background-color: #0d0b09;
-    color: #f5f0e8;
+    background-color: var(--dark);
+    color: var(--cream);
     font-family: 'Montserrat', sans-serif;
 }
 
 .navbar {
-    background-color: #161210;
-    border-bottom: 1px solid #c9a84c33;
+    background-color: var(--dark2);
+    border-bottom: 1px solid var(--line);
+}
+
+.navbar .navbar-brand .brand-accent {
+    color: var(--gold);
+    font-style: italic;
 }
 
 .card {
-    background-color: #463730;
-    border: 1px solid #c9a84c33;
-    color: #f5f0e8;
+    background-color: var(--card);
+    border: 1px solid var(--line);
+    color: var(--cream);
 }
 
 .table {
-    color: #988f80;
-    border-color: #c9a84c22;
+    color: var(--muted);
+    border-color: var(--line);
 }
 
 .table th {
-    background-color: black;
-    color: white;
+    background-color: #0c0a08;
+    color: var(--cream);
 }
 
 .table td {
-    background-color: #463730;
-    color: white;
+    background-color: var(--card);
+    color: var(--cream);
 }
 
 .table thead {
-    background-color: #c0392b;
-    color: white;
-}
-
-.table-hover tbody tr:hover {
-    background-color: #221a16;
+    background-color: var(--red);
     color: #fff;
 }
 
+.table-hover tbody tr:hover {
+    background-color: #2e231b;
+    color: #fff;
+}
+
+/* ---- Badges de função (papel do utilizador) ---- */
 .user-badge {
     font-size: 0.7rem;
     padding: 6px 12px;
     border-radius: 4px;
     font-weight: bold;
+    letter-spacing: 0.04em;
 }
 
 .badge-admin {
-    background: #c0392b;
-    color: white;
+    background: var(--red);
+    color: #fff;
 }
 
 .badge-patrao {
-    background: #c9a84c;
-    color: #0d0b09;
+    background: var(--gold);
+    color: var(--dark);
 }
 
 .badge-staff {
-    background: #2980b9;
-    color: white;
+    background: #2f7fb0;
+    color: #fff;
 }
+
+/* ---- Indicador de permissões na navbar (igual ao dashboard) ---- */
+.perm-pill {
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    padding: 5px 11px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+.perm-pill.perm-total {
+    color: #6fcf97;
+    border-color: rgba(111, 207, 151, 0.4);
+}
+
+.perm-pill.perm-sala {
+    color: #6cb6e3;
+    border-color: rgba(108, 182, 227, 0.4);
+}
+
+/* ---- Botão de retorno no corpo da página ---- */
+.page-return {
+    margin-bottom: 1.5rem;
+}
+
+/* Botões dourados/vermelhos partilhados */
+.btn-gold {
+    background-color: var(--gold);
+    color: var(--dark);
+    border: none;
+    font-weight: 600;
+}
+.btn-gold:hover { background-color: var(--gold-dk); color: var(--dark); }
+
+.btn-red {
+    background-color: var(--red);
+    color: #fff;
+    border: none;
+}
+.btn-red:hover { background-color: var(--red-dk); color: #fff; }
+
+.btn-outline-warning { color: var(--gold); border-color: var(--gold); }
+.btn-outline-warning:hover { background-color: var(--gold); color: var(--dark); }

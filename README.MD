@@ -28,7 +28,6 @@ If on Linux/Mac and already in the Virtual Environment
 (.venv) $ python manage.py runserver 8000
 ```
 
-## TODO:
-Acrescentrar confirmação da pass do user na criação
-Colocar as páginas do sistema interno (auth & admin) com base no template base_internal_system (nav bar tem de ser corrigida para usar o badge de permissões como no dashboard, o botão de return passa para o body.)
-Usar o form no forms.py com o template de reservas públicas. (O cursor sabe interpretar, se não souber é burro)
+## Acrescentar por ordem de prioridade:
+1. pedir p meter as letras em branco no dashboard e gestao de pedidos nao esta a funcionar
+

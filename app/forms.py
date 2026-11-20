@@ -49,6 +49,6 @@ class CreatePublicReservation(forms.Form):
     def clean_cliente_contacto(self):
         contacto = self.cleaned_data["cliente_contacto"]
         contacto = contacto.replace(" ", "")
-        if not (contacto and ((contacto[0] == "+" and not contacto[1:].isdigit()) or (contacto.isdigit()))):
+        if not (contacto and ((contacto[0] == "+" and contacto[1:].isdigit()) or (contacto.isdigit()))):
             raise forms.ValidationError("Contacto deve conter apenas números.")
         return contacto

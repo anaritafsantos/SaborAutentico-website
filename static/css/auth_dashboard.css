@@ -1,24 +1,5 @@
-.badge-pendente {
-    background-color: #dfa82b;
-    color: #000;
-}
-
-.badge-confirmada {
-    background-color: #27ae60;
-    color: white;
-}
-
-.badge-preparacao {
-    background-color: #2980b9;
-    color: white;
-}
-
-.badge-servido {
-    background-color: #8e44ad;
-    color: white;
-}
-
-.badge-concluido {
-    background-color: #7f8c8d;
-    color: white;
-}
+.badge-pendente   { background-color: #d9a13a; color: #1a1511; }
+.badge-confirmada { background-color: #2f9e5f; color: #fff; }
+.badge-preparacao { background-color: #2f7fb0; color: #fff; }
+.badge-servido    { background-color: #8e5aad; color: #fff; }
+.badge-concluido  { background-color: #7d7468; color: #fff; }

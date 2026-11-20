@@ -1,0 +1,334 @@
+{% extends "base_internal_system.html" %}
+{% load static %}
+
+{% block tittle %}Gestão de Pedidos{% endblock %}
+{% block page_name %}Pedidos{% endblock %}
+
+{% block extra_head %}
+<style>
+    .page-sub { color: #c9b99a; font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+    /* ── Coluna de mesas ─────────────────────────────────────────── */
+    .mesas-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 1.25rem;
+        height: 100%;
+    }
+    .mesas-card h6 {
+        color: var(--gold);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+    .mesa-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
+        gap: 0.55rem;
+    }
+    .mesa-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0.8rem 0.3rem;
+        border-radius: 8px;
+        border: 2px solid var(--line);
+        background: #1a1511;
+        color: #e8dfd0;
+        text-decoration: none;
+        font-size: 0.68rem;
+        font-weight: 600;
+        gap: 3px;
+        transition: all 0.15s;
+    }
+    .mesa-btn .num {
+        font-size: 1.5rem;
+        font-family: 'Cormorant Garamond', serif;
+        line-height: 1;
+        color: #f0e8d8;
+    }
+    .mesa-btn .lugares { color: #9a8c7e; font-size: 0.65rem; }
+    .mesa-btn.livre   { border-color: rgba(47,158,95,0.4); }
+    .mesa-btn.livre:hover { border-color: #2f9e5f; background: rgba(47,158,95,0.07); }
+    .mesa-btn.ocupada { border-color: rgba(192,69,58,0.5); background: rgba(192,69,58,0.06); }
+    .mesa-btn.ocupada:hover { border-color: var(--red); background: rgba(192,69,58,0.13); }
+    .mesa-btn.selecionada { border-color: var(--gold) !important; background: rgba(212,176,102,0.1) !important; }
+    .mesa-btn.selecionada .num { color: var(--gold); }
+
+    .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 2px; }
+    .dot-livre  { background: #2f9e5f; }
+    .dot-ocupada { background: var(--red); }
+
+    .legenda { font-size: 0.68rem; color: #9a8c7e; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--line); }
+
+    /* ── Painel direito ──────────────────────────────────────────── */
+    .painel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 1.5rem;
+        min-height: 420px;
+    }
+    .painel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid var(--line);
+    }
+    .painel-header h4 { margin: 0; color: #f0e8d8; }
+    .painel-header .sub { font-size: 0.78rem; color: #9a8c7e; }
+
+    .est-pill { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 4px 12px; border-radius: 999px; }
+    .est-pill.livre   { background: rgba(47,158,95,0.15); color: #5ecb8a; border: 1px solid rgba(47,158,95,0.3); }
+    .est-pill.ocupada { background: rgba(192,69,58,0.15); color: #e07070; border: 1px solid rgba(192,69,58,0.3); }
+
+    /* ── Vazio / sem pedido ──────────────────────────────────────── */
+    .vazio {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; min-height: 320px;
+        color: #6e6054; text-align: center; gap: 0.75rem;
+    }
+    .vazio svg { opacity: 0.3; }
+    .vazio p { color: #9a8c7e; font-size: 0.88rem; margin: 0; }
+
+    .sem-pedido {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; min-height: 260px; gap: 0.85rem; text-align: center;
+    }
+    .sem-pedido p { color: #9a8c7e; font-size: 0.88rem; margin: 0; }
+
+    /* ── Meta do pedido ──────────────────────────────────────────── */
+    .pedido-meta {
+        display: flex; align-items: center; gap: 0.5rem;
+        font-size: 0.78rem; color: #9a8c7e; margin-bottom: 1rem;
+    }
+    .pid {
+        background: rgba(212,176,102,0.12); border: 1px solid rgba(212,176,102,0.25);
+        color: var(--gold); font-weight: 700; padding: 2px 9px;
+        border-radius: 4px; font-size: 0.75rem;
+    }
+
+    /* ── Itens ───────────────────────────────────────────────────── */
+    .item-row {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0.6rem 0; border-bottom: 1px solid var(--line);
+    }
+    .item-row:last-child { border-bottom: none; }
+    .item-nome { font-weight: 600; color: #f0e8d8; font-size: 0.9rem; }
+    .item-qtd  { font-size: 0.77rem; color: #9a8c7e; }
+    .item-preco { font-weight: 700; color: var(--gold); font-size: 0.9rem; margin-right: 0.75rem; white-space: nowrap; }
+
+    .btn-remove {
+        background: transparent; border: 1px solid rgba(192,69,58,0.4);
+        color: var(--red); border-radius: 50%; width: 26px; height: 26px;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.85rem; cursor: pointer; transition: all 0.12s; padding: 0;
+    }
+    .btn-remove:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+    .sem-itens { color: #9a8c7e; font-style: italic; font-size: 0.85rem; padding: 0.5rem 0; }
+
+    /* ── Total ───────────────────────────────────────────────────── */
+    .total-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0.85rem 1rem;
+        background: rgba(212,176,102,0.07); border: 1px solid rgba(212,176,102,0.2);
+        border-radius: 8px; margin-top: 0.75rem;
+    }
+    .total-label { color: #9a8c7e; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .total-valor { color: var(--gold); font-weight: 700; font-size: 1.25rem; font-family: 'Cormorant Garamond', serif; }
+
+    /* ── Form de adicionar ───────────────────────────────────────── */
+    .form-add {
+        background: #1a1511; border: 1px solid var(--line);
+        border-radius: 8px; padding: 1rem; margin-top: 1.25rem;
+    }
+    .form-add-title {
+        color: var(--gold); font-size: 0.75rem; font-weight: 700;
+        letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 0.85rem;
+    }
+    .form-label { color: #c9b99a !important; }
+
+    /* ── Barra de acções ─────────────────────────────────────────── */
+    .acoes-bar {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--line);
+        flex-wrap: wrap; gap: 0.5rem;
+    }
+    .acoes-bar span { color: #9a8c7e; font-size: 0.8rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success bg-success text-white{% endif %} border-0 shadow mb-3">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<h2 class="text-white mb-1">Gestão de Pedidos</h2>
+<p class="page-sub">Selecione uma mesa para abrir ou gerir o seu pedido.</p>
+
+<div class="row g-4">
+
+    <!-- MESAS -->
+    <div class="col-12 col-lg-3">
+        <div class="mesas-card">
+            <h6>Mesas</h6>
+            {% if mesas %}
+                <div class="mesa-grid">
+                    {% for mesa in mesas %}
+                        <a href="?mesa={{ mesa.pk }}"
+                           class="mesa-btn {{ mesa.estado }}{% if mesa_selecionada and mesa_selecionada.pk == mesa.pk %} selecionada{% endif %}">
+                            <span class="num">{{ mesa.numero }}</span>
+                            <span class="lugares">{{ mesa.lugares }}p.</span>
+                            <span>
+                                <span class="dot dot-{{ mesa.estado }}"></span>
+                                {{ mesa.estado|capfirst }}
+                            </span>
+                        </a>
+                    {% endfor %}
+                </div>
+                <div class="legenda">
+                    <span class="dot dot-livre"></span> Livre &nbsp;
+                    <span class="dot dot-ocupada"></span> Ocupada
+                </div>
+            {% else %}
+                <p style="color:#9a8c7e; font-size:0.82rem;">
+                    Sem mesas registadas.<br>
+                    <a href="{% url 'gestao_mesas' %}" style="color:var(--gold);">Criar mesas →</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- PAINEL -->
+    <div class="col-12 col-lg-9">
+        <div class="painel">
+
+            {% if not mesa_selecionada %}
+                <div class="vazio">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1H12v6h.5a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1H4V6H3.5a.5.5 0 0 1-.5-.5zM5 6v6h1.5V6H5zm2.5 0v6H9V6H7.5zm2.5 0v6h1.5V6H10z"/>
+                    </svg>
+                    <p>Selecione uma mesa à esquerda para começar</p>
+                </div>
+
+            {% else %}
+                <div class="painel-header">
+                    <div>
+                        <h4>Mesa {{ mesa_selecionada.numero }}</h4>
+                        <span class="sub">{{ mesa_selecionada.lugares }} lugares</span>
+                    </div>
+                    <span class="est-pill {{ mesa_selecionada.estado }}">{{ mesa_selecionada.estado|capfirst }}</span>
+                </div>
+
+                {% if not pedido_aberto %}
+                    <div class="sem-pedido">
+                        <p>Esta mesa não tem nenhum pedido em aberto.</p>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="mesa_id" value="{{ mesa_selecionada.pk }}">
+                            <input type="hidden" name="action"  value="abrir">
+                            <button type="submit" class="btn btn-gold px-4">Abrir Pedido</button>
+                        </form>
+                    </div>
+
+                {% else %}
+                    <div class="pedido-meta">
+                        <span class="pid">#{{ pedido_aberto.pk }}</span>
+                        <span>Aberto em {{ pedido_aberto.data_pedido|date:"d/m/Y" }} às {{ pedido_aberto.data_pedido|date:"H:i" }}</span>
+                    </div>
+
+                    {% if itens_pedido %}
+                        {% for item in itens_pedido %}
+                            <div class="item-row">
+                                <div>
+                                    <div class="item-nome">{{ item.id_prato.nome }}</div>
+                                    <div class="item-qtd">{{ item.quantidade }} × {{ item.preco_unitario|floatformat:2 }} €</div>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="item-preco">{{ item.preco_unitario|floatformat:2 }} €</span>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="mesa_id"  value="{{ mesa_selecionada.pk }}">
+                                        <input type="hidden" name="action"   value="remover_item">
+                                        <input type="hidden" name="item_id"  value="{{ item.pk }}">
+                                        <button type="submit" class="btn-remove"
+                                                onclick="return confirm('Remover este item?')">×</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="total-row">
+                            <span class="total-label">{{ itens_pedido|length }} item(ns) — Total</span>
+                            <span class="total-valor">{{ total_pedido|floatformat:2 }} €</span>
+                        </div>
+                    {% else %}
+                        <p class="sem-itens">Ainda sem itens no pedido.</p>
+                    {% endif %}
+
+                    <div class="form-add">
+                        <div class="form-add-title">Adicionar Prato</div>
+                        <form method="post" class="row g-2 align-items-end">
+                            {% csrf_token %}
+                            <input type="hidden" name="mesa_id"   value="{{ mesa_selecionada.pk }}">
+                            <input type="hidden" name="pedido_id" value="{{ pedido_aberto.pk }}">
+                            <input type="hidden" name="action"    value="adicionar_item">
+                            <div class="col-12 col-sm-7">
+                                <label class="form-label small mb-1">Prato</label>
+                                <select name="prato_id" class="form-select form-select-sm" required>
+                                    <option value="">-- Escolher prato --</option>
+                                    {% for prato in pratos %}
+                                        <option value="{{ prato.pk }}">
+                                            {{ prato.nome }} — {{ prato.preco|floatformat:2 }} €{% if prato.quantidade <= 5 %} ⚠{% endif %}
+                                        </option>
+                                    {% empty %}
+                                        <option disabled>Sem pratos disponíveis</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-5 col-sm-2">
+                                <label class="form-label small mb-1">Qtd.</label>
+                                <input type="number" name="quantidade"
+                                       class="form-control form-control-sm"
+                                       value="1" min="1" max="99" required>
+                            </div>
+                            <div class="col-7 col-sm-3">
+                                <button type="submit" class="btn btn-gold btn-sm w-100">+ Adicionar</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="acoes-bar">
+                        <span>Pedido em aberto — feche quando a mesa terminar.</span>
+                        <form method="post"
+                              onsubmit="return confirm('Fechar pedido e libertar Mesa {{ mesa_selecionada.numero }}?')">
+                            {% csrf_token %}
+                            <input type="hidden" name="mesa_id"   value="{{ mesa_selecionada.pk }}">
+                            <input type="hidden" name="pedido_id" value="{{ pedido_aberto.pk }}">
+                            <input type="hidden" name="action"    value="fechar">
+                            <button type="submit" class="btn btn-red">Fechar Pedido &amp; Libertar Mesa</button>
+                        </form>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-warning">← Voltar ao Dashboard</a>
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "base_internal_system.html" %}
+{% load static %}
+
+{% block tittle %}Gestão de Mesas{% endblock %}
+{% block page_name %}Mesas{% endblock %}
+
+{% block extra_head %}
+<style>
+    .mesa-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    .mesa-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 1.1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .mesa-card .num {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        color: var(--gold);
+        line-height: 1;
+    }
+    .mesa-card .lugares { font-size: 0.8rem; color: var(--muted); }
+    .est-pill {
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em;
+        text-transform: uppercase; padding: 3px 10px; border-radius: 999px;
+        align-self: flex-start;
+    }
+    .est-livre   { background: rgba(47,158,95,0.15); color: #5ecb8a; border: 1px solid rgba(47,158,95,0.3); }
+    .est-ocupada { background: rgba(192,69,58,0.15); color: #e07070; border: 1px solid rgba(192,69,58,0.3); }
+
+    .form-criar {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 1.5rem;
+        max-width: 500px;
+    }
+    .form-criar h5 { color: var(--gold); font-size: 0.82rem; font-weight: 700;
+                     letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success bg-success text-white{% endif %} border-0 shadow mb-3">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <h2 class="text-white mb-0">Gestão de Mesas</h2>
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-warning btn-sm">← Dashboard</a>
+</div>
+
+{# ── Mesas existentes ─────────────────────────────────────────── #}
+{% if mesas %}
+    <div class="mesa-grid">
+        {% for mesa in mesas %}
+            <div class="mesa-card">
+                <div class="num">{{ mesa.numero }}</div>
+                <div class="lugares">{{ mesa.lugares }} lugares</div>
+                <span class="est-pill est-{{ mesa.estado }}">{{ mesa.estado|capfirst }}</span>
+                {% if mesa.estado == 'livre' %}
+                    <form method="post"
+                          onsubmit="return confirm('Apagar a Mesa {{ mesa.numero }}?')"
+                          style="margin-top:auto;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action"  value="apagar">
+                        <input type="hidden" name="mesa_id" value="{{ mesa.pk }}">
+                        <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                            Apagar
+                        </button>
+                    </form>
+                {% else %}
+                    <span class="text-muted" style="font-size:0.72rem; margin-top:auto;">
+                        Ocupada — não pode apagar
+                    </span>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-white mb-4">Não existem mesas registadas. Crie a primeira abaixo.</p>
+{% endif %}
+
+{# ── Formulário de criar mesa ─────────────────────────────────── #}
+<div class="form-criar">
+    <h5>Adicionar nova mesa</h5>
+    <form method="post" class="row g-3">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="criar">
+        <div class="col-6">
+            <label class="form-label small text-white mb-1">Número da mesa</label>
+            <input type="number" name="numero" class="form-control form-control-sm"
+                   min="1" placeholder="ex: 5" required>
+        </div>
+        <div class="col-6">
+            <label class="form-label small text-white mb-1">Lugares</label>
+            <input type="number" name="lugares" class="form-control form-control-sm"
+                   min="1" placeholder="ex: 4" required>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-gold w-100">+ Criar Mesa</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

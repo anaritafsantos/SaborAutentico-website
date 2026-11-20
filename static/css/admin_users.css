@@ -1,58 +1,30 @@
-.btn-gold {
-    background-color: #c9a84c;
-    color: #0d0b09;
-    border: none;
-    font-weight: 600;
-}
-
-.btn-gold:hover {
-    background-color: #b0913c;
-}
-
-.btn-red {
-    background-color: #c0392b;
-    color: white;
-    border: none;
-}
-
-.btn-red:hover {
-    background-color: #a93226;
-}
-
 .modal-content {
-    background-color: #161210;
-    color: #f5f0e8;
-    border: 1px solid #c9a84c33;
+    background-color: #1a1511;
+    color: #f6f1e8;
+    border: 1px solid rgba(212, 176, 102, 0.2);
 }
 
-.modal-header {
-    border-bottom: 1px solid #c9a84c22;
-}
-
-.modal-footer {
-    border-top: 1px solid #c9a84c22;
-}
+.modal-header { border-bottom: 1px solid rgba(212, 176, 102, 0.14); }
+.modal-footer { border-top: 1px solid rgba(212, 176, 102, 0.14); }
 
 .form-control, .form-select {
-    background-color: #0d0b09;
-    color: #f5f0e8;
-    border: 1px solid #c9a84c55;
+    background-color: #100d0a;
+    color: #f6f1e8;
+    border: 1px solid rgba(212, 176, 102, 0.35);
 }
 
 .form-control:focus, .form-select:focus {
-    background-color: #0d0b09;
-    color: #f5f0e8;
-    border-color: #c9a84c;
-    box-shadow: 0 0 0 0.2rem rgba(201,168,76,.15);
+    background-color: #100d0a;
+    color: #f6f1e8;
+    border-color: #d4b066;
+    box-shadow: 0 0 0 0.2rem rgba(212, 176, 102, 0.15);
 }
 
 .form-label {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: rgba(245,240,232,.6);
+    color: rgba(246, 241, 232, 0.6);
 }
 
-.btn-close {
-    filter: invert(1);
-}
+.btn-close { filter: invert(1); }

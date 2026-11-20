@@ -23,7 +23,7 @@
             <label>O Seu Nome</label>
             <input type="text" name="cliente_nome"
                    value="{{ form.cliente_nome.value|default_if_none:'' }}"
-                   required placeholder="Ex: João Silva">
+                   required placeholder="Ex.: João Silva">
 
             {% if form.cliente_nome.errors %}
                 <div class="error-msg">{{ form.cliente_nome.errors.0 }}</div>
@@ -34,7 +34,7 @@
             <label>Contacto Telefónico</label>
             <input type="text" name="cliente_contacto"
                    value="{{ form.cliente_contacto.value|default_if_none:'' }}"
-                   required placeholder="Ex: 912 345 678">
+                   required placeholder="Ex.: 912 345 678">
 
             {% if form.cliente_contacto.errors %}
                 <div class="error-msg">{{ form.cliente_contacto.errors.0 }}</div>
@@ -68,7 +68,8 @@
         <div class="form-group">
             <label>Número de Pessoas</label>
             <input type="number" name="numero_pessoas"
-                   value="1" min="1" max="20" required>
+                   value="{{ form.numero_pessoas.value|default_if_none:'1' }}"
+                   min="1" max="20" required>
 
             {% if form.numero_pessoas.errors %}
                 <div class="error-msg">{{ form.numero_pessoas.errors.0 }}</div>

@@ -1,77 +1,82 @@
+/* =========================================================
+   Login — agora renderizado DENTRO de base_internal_system.
+   Os estilos aplicam-se a um cartão centrado no corpo da
+   página (não ao <body>, que já é gerido pelo main.css).
+   ========================================================= */
 :root {
-    --red: #c0392b;
-    --gold: #c9a84c;
-    --cream: #f5f0e8;
-    --dark: #0d0b09;
+    --red:   #c0453a;
+    --gold:  #d4b066;
+    --cream: #f6f1e8;
+    --dark:  #100d0a;
+    --card:  #241c16;
 }
 
-body {
-    background: var(--dark);
-    color: var(--cream);
-    font-family: 'Montserrat', sans-serif;
+.login-wrapper {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    padding: 20px;
+    justify-content: center;
+    min-height: calc(100vh - 160px);
+    padding: 20px 0;
 }
 
-.container {
-    background: #161210;
+.login-card {
+    background: var(--card);
     padding: 50px 40px;
-    border-radius: 4px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    border-radius: 6px;
+    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.55);
     max-width: 450px;
     width: 100%;
     border-top: 3px solid var(--gold);
     text-align: center;
 }
 
-h2 {
+.login-card h2 {
     font-family: 'Cormorant Garamond', serif;
     font-size: 2.2rem;
     margin-bottom: 5px;
+    color: var(--cream);
 }
 
-p.subtitle {
-    color: var(--red);
+.login-card .subtitle {
+    color: var(--gold);
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 3px;
     margin-bottom: 35px;
 }
 
-.form-group {
+.login-card .form-group {
     margin-bottom: 25px;
     text-align: left;
 }
 
-label {
+.login-card label {
     display: block;
     font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 8px;
-    color: rgba(245,240,232,0.5);
+    color: rgba(246, 241, 232, 0.5);
 }
 
-input {
+.login-card input {
     width: 100%;
     padding: 12px;
-    background: rgba(245,240,232,0.03);
-    border: 1px solid rgba(201,168,76,0.3);
+    background: rgba(246, 241, 232, 0.03);
+    border: 1px solid rgba(212, 176, 102, 0.3);
     color: var(--cream);
     font-family: inherit;
+    border-radius: 3px;
 }
 
-input:focus {
+.login-card input:focus {
     outline: none;
     border-color: var(--gold);
-    background: rgba(201,168,76,0.08);
+    background: rgba(212, 176, 102, 0.08);
 }
 
-.btn-submit {
+.login-card .btn-submit {
     width: 100%;
     padding: 15px;
     background: var(--gold);
@@ -81,30 +86,27 @@ input:focus {
     font-weight: 600;
     letter-spacing: 2px;
     cursor: pointer;
+    border-radius: 3px;
 }
 
-.btn-submit:hover {
-    background: #b0913c;
-}
+.login-card .btn-submit:hover { background: #b8954f; }
 
-.back-link {
-    display: inline-block;
-    margin-top: 25px;
-    color: rgba(245,240,232,0.4);
-    text-decoration: none;
-    font-size: 0.75rem;
-}
-
-.back-link:hover {
-    color: var(--red);
-}
-
-.alert {
-    background: rgba(192,57,43,.1);
+.login-card .alert-login {
+    background: rgba(192, 69, 58, 0.12);
     border-left: 3px solid var(--red);
     padding: 12px;
     margin-bottom: 20px;
     font-size: 0.8rem;
-    color: #e07a70;
+    color: #e08a7e;
     text-align: left;
 }
+
+.login-wrapper .back-link {
+    display: inline-block;
+    margin-top: 22px;
+    color: rgba(246, 241, 232, 0.45);
+    text-decoration: none;
+    font-size: 0.78rem;
+}
+
+.login-wrapper .back-link:hover { color: var(--gold); }

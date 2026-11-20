@@ -1,0 +1,300 @@
+{% extends "base_internal_system.html" %}
+{% load static %}
+
+{% block tittle %}Stock{% endblock %}
+{% block page_name %}Stock{% endblock %}
+
+{% block extra_head %}
+<style>
+    .page-sub { color: #c9b99a; font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+    /* ── Banner de alerta ────────────────────────────────────────── */
+    .alerta-banner {
+        background: rgba(192,69,58,0.10); border: 1px solid rgba(192,69,58,0.35);
+        border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+    }
+    .alerta-title { color: #e07070; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.6rem; }
+    .alerta-chip {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        background: rgba(192,69,58,0.15); border: 1px solid rgba(192,69,58,0.3);
+        border-radius: 999px; padding: 3px 12px; font-size: 0.78rem;
+        color: #e07070; margin: 2px 3px 2px 0;
+    }
+    .alerta-chip strong { color: #ff9090; }
+    .ok-banner {
+        background: rgba(47,158,95,0.08); border: 1px solid rgba(47,158,95,0.3);
+        border-radius: 10px; padding: 0.75rem 1.25rem; color: #5ecb8a;
+        font-size: 0.88rem; margin-bottom: 1.5rem;
+    }
+
+    /* ── Tabela ──────────────────────────────────────────────────── */
+    .stock-table thead tr { background: #0e0b08; }
+    .stock-table thead th {
+        color: var(--gold); font-size: 0.75rem; font-weight: 700;
+        letter-spacing: 0.07em; text-transform: uppercase;
+        padding: 0.85rem 1rem; border-bottom: 1px solid var(--line);
+    }
+    .stock-table tbody tr { border-bottom: 1px solid var(--line); transition: background 0.12s; }
+    .stock-table tbody tr:hover { background: rgba(212,176,102,0.04); }
+    .stock-table tbody td { padding: 0.7rem 1rem; vertical-align: middle; color: #f0e8d8; }
+
+    .prato-nome { font-weight: 600; color: #f0e8d8; font-size: 0.92rem; }
+    .cat-tag {
+        font-size: 0.72rem; padding: 2px 9px; border-radius: 999px;
+        background: rgba(255,255,255,0.06); color: #c9b99a; border: 1px solid var(--line);
+    }
+
+    /* ── Barra de stock ──────────────────────────────────────────── */
+    .bar-wrap { width: 70px; height: 5px; background: rgba(255,255,255,0.07); border-radius: 999px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 6px; }
+    .bar-fill  { height: 100%; border-radius: 999px; }
+    .bar-ok      { background: #2f9e5f; }
+    .bar-baixo   { background: #d9a13a; }
+    .bar-critico { background: var(--red); }
+
+    /* ── Badges ──────────────────────────────────────────────────── */
+    .qty { font-size: 0.82rem; font-weight: 700; padding: 3px 10px; border-radius: 5px; display: inline-block; min-width: 36px; text-align: center; }
+    .qty-ok      { background: rgba(47,158,95,0.15);  color: #5ecb8a; }
+    .qty-baixo   { background: rgba(217,161,58,0.15); color: #d9a13a; }
+    .qty-critico { background: rgba(192,69,58,0.18);  color: #e07070; }
+
+    .est-badge { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; padding: 3px 9px; border-radius: 5px; text-transform: uppercase; }
+    .est-ok      { background: rgba(47,158,95,0.15);  color: #5ecb8a;  border: 1px solid rgba(47,158,95,0.3); }
+    .est-baixo   { background: rgba(217,161,58,0.15); color: #d9a13a;  border: 1px solid rgba(217,161,58,0.3); }
+    .est-critico { background: rgba(192,69,58,0.15);  color: #e07070;  border: 1px solid rgba(192,69,58,0.3); }
+    .est-indisp  { background: rgba(120,120,120,0.15); color: #888; border: 1px solid rgba(120,120,120,0.3); }
+
+    /* ── Acções inline ───────────────────────────────────────────── */
+    .acoes-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; }
+    .acoes-btns { display: flex; gap: 0.35rem; }
+
+    .repor-form {
+        display: none; align-items: center; gap: 0.35rem; flex-wrap: wrap; justify-content: flex-end;
+    }
+    .repor-form.open { display: flex; }
+    .repor-form input[type="number"] { width: 70px; }
+
+    .btn-repor {
+        background: transparent; border: 1px solid var(--gold); color: var(--gold);
+        font-size: 0.75rem; padding: 3px 10px; border-radius: 5px; cursor: pointer; transition: background 0.15s;
+    }
+    .btn-repor:hover { background: rgba(212,176,102,0.12); }
+
+    /* ── Modal de criar prato ────────────────────────────────────── */
+    .criar-prato-card {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: 10px; padding: 1.5rem; margin-top: 2rem;
+    }
+    .criar-prato-card h5 {
+        color: var(--gold); font-size: 0.78rem; font-weight: 700;
+        letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 1.1rem;
+    }
+    .form-label { color: #c9b99a !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success bg-success text-white{% endif %} border-0 shadow mb-3">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="d-flex align-items-baseline justify-content-between flex-wrap gap-2 mb-1">
+    <h2 class="text-white mb-0">Stock de Pratos</h2>
+    <span style="font-size:0.75rem; color:#9a8c7e; border:1px solid var(--line); padding:3px 12px; border-radius:999px;">
+        ⚠ Alerta em ≤ {{ stock_minimo }} unidades
+    </span>
+</div>
+<p class="page-sub">Consulte o inventário, reponha stock ou adicione/remova pratos.</p>
+
+{# ── Alertas ──────────────────────────────────────────────────── #}
+{% if alertas %}
+    <div class="alerta-banner">
+        <div class="alerta-title">⚠ {{ alertas|length }} prato(s) com stock baixo ou esgotado</div>
+        <div>
+            {% for a in alertas %}
+                <span class="alerta-chip">
+                    {{ a.nome }} — <strong>{{ a.quantidade }}</strong> un.{% if a.quantidade == 0 %} · ESGOTADO{% endif %}
+                </span>
+            {% endfor %}
+        </div>
+    </div>
+{% else %}
+    <div class="ok-banner">✓ Todos os pratos têm stock suficiente.</div>
+{% endif %}
+
+{# ── Tabela de stock ──────────────────────────────────────────── #}
+<div class="card p-0 overflow-hidden">
+    <table class="table stock-table mb-0">
+        <thead>
+            <tr>
+                <th style="width:35%">Prato</th>
+                <th>Categoria</th>
+                <th class="text-center">Quantidade</th>
+                <th class="text-center">Estado</th>
+                <th class="text-end pe-3">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prato in pratos_stock %}
+                <tr id="linha-{{ prato.id_prato }}">
+
+                    <td class="prato-nome">{{ prato.nome }}</td>
+
+                    <td>
+                        {% if prato.categoria %}
+                            <span class="cat-tag">{{ prato.categoria }}</span>
+                        {% else %}
+                            <span style="color:#6e6054;">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-center">
+                        <span class="bar-wrap">
+                            <span class="bar-fill
+                                {% if prato.quantidade == 0 %}bar-critico
+                                {% elif prato.quantidade <= stock_minimo %}bar-baixo
+                                {% else %}bar-ok{% endif %}"
+                                style="width:{% if prato.quantidade == 0 %}3{% elif prato.quantidade >= 50 %}100{% else %}{{ prato.quantidade }}{% endif %}%">
+                            </span>
+                        </span>
+                        <span class="qty
+                            {% if prato.quantidade == 0 %}qty-critico
+                            {% elif prato.quantidade <= stock_minimo %}qty-baixo
+                            {% else %}qty-ok{% endif %}">
+                            {{ prato.quantidade }}
+                        </span>
+                    </td>
+
+                    <td class="text-center">
+                        {% if not prato.disponivel %}
+                            <span class="est-badge est-indisp">Indisp.</span>
+                        {% elif prato.quantidade == 0 %}
+                            <span class="est-badge est-critico">Esgotado</span>
+                        {% elif prato.quantidade <= stock_minimo %}
+                            <span class="est-badge est-baixo">Baixo</span>
+                        {% else %}
+                            <span class="est-badge est-ok">OK</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-end pe-3">
+                        <div class="acoes-wrap">
+                            <div class="acoes-btns">
+                                {# Repor stock #}
+                                <button type="button" class="btn-repor"
+                                        onclick="toggleRepor({{ prato.id_prato }})">
+                                    + Repor
+                                </button>
+                                {# Toggle disponibilidade #}
+                                <form method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action"   value="toggle_disponibilidade">
+                                    <input type="hidden" name="prato_id" value="{{ prato.id_prato }}">
+                                    <button type="submit"
+                                            class="btn btn-sm {% if prato.disponivel %}btn-outline-secondary{% else %}btn-outline-success{% endif %}"
+                                            style="font-size:0.72rem; padding:3px 8px;">
+                                        {% if prato.disponivel %}Desativar{% else %}Ativar{% endif %}
+                                    </button>
+                                </form>
+                                {# Remover prato #}
+                                <form method="post" style="display:inline;"
+                                      onsubmit="return confirm('Remover o prato \'{{ prato.nome }}\' do sistema?')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action"   value="remover_prato">
+                                    <input type="hidden" name="prato_id" value="{{ prato.id_prato }}">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            style="font-size:0.72rem; padding:3px 8px;">
+                                        Remover
+                                    </button>
+                                </form>
+                            </div>
+                            {# Form de reposição inline #}
+                            <form class="repor-form" id="repor-{{ prato.id_prato }}"
+                                  method="post" action="{% url 'stock' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action"   value="repor">
+                                <input type="hidden" name="prato_id" value="{{ prato.id_prato }}">
+                                <input type="number" name="quantidade"
+                                       class="form-control form-control-sm"
+                                       placeholder="Qtd." min="1" max="9999" required>
+                                <button type="submit" class="btn btn-sm btn-gold">✓</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        onclick="toggleRepor({{ prato.id_prato }})">✕</button>
+                            </form>
+                        </div>
+                    </td>
+
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5" style="color:#9a8c7e;">
+                        Sem pratos registados. Adicione o primeiro abaixo.
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{# ── Formulário de criar novo prato ───────────────────────────── #}
+<div class="criar-prato-card">
+    <h5>Adicionar novo prato</h5>
+    <form method="post" class="row g-3">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="criar_prato">
+
+        <div class="col-12 col-md-5">
+            <label class="form-label small mb-1">Nome *</label>
+            <input type="text" name="nome" class="form-control form-control-sm"
+                   placeholder="ex: Bacalhau à Brás" required>
+        </div>
+        <div class="col-6 col-md-2">
+            <label class="form-label small mb-1">Preço (€) *</label>
+            <input type="text" name="preco" class="form-control form-control-sm"
+                   placeholder="ex: 12.50" required>
+        </div>
+        <div class="col-6 col-md-2">
+            <label class="form-label small mb-1">Stock inicial</label>
+            <input type="number" name="quantidade" class="form-control form-control-sm"
+                   value="0" min="0">
+        </div>
+        <div class="col-12 col-md-3">
+            <label class="form-label small mb-1">Categoria</label>
+            <select name="categoria_id" class="form-select form-select-sm">
+                <option value="">— Sem categoria —</option>
+                {% for cat in categorias %}
+                    <option value="{{ cat.pk }}">{{ cat.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-12">
+            <label class="form-label small mb-1">Descrição (opcional)</label>
+            <input type="text" name="descricao" class="form-control form-control-sm"
+                   placeholder="Breve descrição do prato">
+        </div>
+        <div class="col-12 col-md-3">
+            <button type="submit" class="btn btn-gold w-100">+ Adicionar Prato</button>
+        </div>
+    </form>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-warning">← Voltar ao Dashboard</a>
+</div>
+
+{% endblock %}
+
+{% block extra_script %}
+<script>
+function toggleRepor(id) {
+    const f = document.getElementById('repor-' + id);
+    f.classList.toggle('open');
+    if (f.classList.contains('open')) f.querySelector('input[name="quantidade"]').focus();
+}
+</script>
+{% endblock %}
