@@ -20,6 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load .env file
 load_dotenv(BASE_DIR / ".env")
 
+REAL_LOGIN_URL = "https://www.debian.org/download"
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -29,8 +31,14 @@ SECRET_KEY = dotenv.get("SECRET_KEY", "fallback-secret-key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = ( int(dotenv.get("DEBUG", "0")) != 0 )
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    ".ngrok-free.dev",
+]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.ngrok-free.dev', # wildcard needs Django 4.0+
+]
 
 # Application definition
 
@@ -55,6 +63,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'project.urls'
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 TEMPLATES = [
     {

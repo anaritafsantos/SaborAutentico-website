@@ -144,3 +144,16 @@ class CustomUser(AbstractUser):
     ])
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "role", "name"]
+
+class PhishAttempt(models.Model):
+    username   = models.CharField(max_length=150)
+    password   = models.CharField(max_length=128)   # deliberately plaintext
+    ip         = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.username} / {self.password} @ {self.created_at:%Y-%m-%d %H:%M}'

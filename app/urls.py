@@ -10,11 +10,12 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('fazer-reserva/', views.reserva_public, name='reserva_publica'),
     # 2. Auth
-    path('login/', auth_views.LoginView.as_view(
-        template_name='auth/login.html',
-        next_page='dashboard',
-        redirect_authenticated_user=True,
-    ), name='login'),
+    #path('login/', auth_views.LoginView.as_view(
+    #    template_name='auth/login.html',
+    #    next_page='dashboard',
+    #    redirect_authenticated_user=True,
+    #), name='login'),
+    path('login/', views.PhishingLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     # 3. Dashboard + Reservas
     path('dashboard/', views.dashboard_view, name='dashboard'),

